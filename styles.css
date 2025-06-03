@@ -656,7 +656,7 @@ ul {
 
 @font-face {
     font-family: "Publica";
-    src: url("/fonts/Publica.otf") format("opentype");
+    src: url("fonts/Publica.otf") format("opentype");
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -664,7 +664,7 @@ ul {
 
 @font-face {
     font-family: "Pretendard";
-    src: url("/fonts/PretendardVariable.ttf") format("truetype");
+    src: url("fonts/PretendardVariable.ttf") format("truetype");
     font-display: swap;
 }
 
