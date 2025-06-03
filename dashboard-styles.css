@@ -1,0 +1,3001 @@
+/* =======================================
+   FONT IMPORTS
+   ======================================= */
+@font-face {
+  font-family: "Publica";
+  src: url("../fonts/Publica.otf") format("opentype");
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  src: url("../fonts/PretendardVariable.ttf") format("truetype");
+  font-style: normal;
+  font-display: swap;
+}
+
+/* =======================================
+   CSS VARIABLES
+   ======================================= */
+:root {
+  --green: #aeea00;
+  --blue: #10161c; /* Main background blue */
+  --light-blue-bg: #1e2934; /* For sportsbook table and new section */
+  --white: #ededed;
+  --transition-speed: 0.3s;
+  /* ... (existing variables) ... */
+  --primary-bg: #0d1017;
+  --secondary-bg: #131823;
+  --card-bg: #1a212e;
+  /* --green: #aeea00; Main green for accents - already defined */
+  --light-green: #cfff47;
+  --dark-green: #8cb300;
+  /* --white: #ffffff; - already defined, using #ededed for main white */
+  --true-white: #ffffff; /* For elements needing pure white */
+  --grey: #8e8e93; /* For less important text or icons */
+  --light-grey: #cccccc;
+  --dark-grey: #3a3a3c;
+  --separator-color: rgba(255, 255, 255, 0.1);
+  --input-bg: #2c3542;
+  --input-border: #3e4a5c;
+  --button-hover-bg: #1e2633;
+  /* --transition-speed: 0.3s; - already defined */
+  --odds-block-bg: #1e2934;
+  --odds-block-border: #2c3a47;
+  --tag-bg: #2c3542;
+  --tag-text: var(--light-green);
+  --current-odds-bg: #1e2934;
+  --refresh-button-bg: rgba(174, 234, 0, 0.1);
+  --refresh-button-hover-bg: rgba(174, 234, 0, 0.2);
+  --refresh-button-disabled-bg: rgba(174, 234, 0, 0.05);
+  --refresh-button-disabled-text: rgba(174, 234, 0, 0.3);
+  --performance-header-bg: #1e2934; /* Example, can be same as odds-block-bg */
+  --performance-group-bg: #171f28; /* Darker than category, similar to social card */
+  --action-button-primary-bg: var(--green);
+  --action-button-primary-text: #000000;
+  --action-button-secondary-bg: #2c3542;
+  --action-button-secondary-text: var(--white);
+
+  --social-buzz-bg: #1e2934;
+  --social-card-bg: #171f28; /* Also used for news-card */
+  --greyed-out-text: rgba(237, 237, 237, 0.6); /* Use var(--grey) or this */
+  --social-card-initial-max-height: 190px;
+}
+
+/* =======================================
+   GLOBAL RESET & BASE STYLES (MOBILE)
+   ======================================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--blue);
+  font-family: "Pretendard", sans-serif;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* =======================================
+   PROMPT SUMMARY SECTION (MOBILE)
+   ======================================= */
+.prompt-summary-section {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(30, 41, 52, 0); /* Increased opacity slightly */
+  backdrop-filter: blur(100px); /* Standard blur */
+  -webkit-backdrop-filter: blur(100px); /* Safari */
+  z-index: 100;
+  padding: 2rem 1rem;
+  border-bottom: 1px solid var(--separator-color);
+  box-sizing: border-box;    /* include padding in its own width calculation */
+  max-width: 100vw;          /* never exceed viewport width */
+  overflow-x: hidden;        /* hide any sub-pixel overflow */
+  /* ADD THIS TRANSITION */
+  transition: padding var(--transition-speed) ease-in-out;
+}
+
+/* ADD THIS NEW CLASS AND ITS RULES */
+.prompt-summary-section.minimized {
+  padding-top: .9rem;
+  padding-bottom:.9rem;
+  background-color: rgba(30, 41, 52, 0.95); /* Optional: slightly more opaque when minimized */
+}
+
+/* Group 1: Navigation and actions */
+.summary-group-1 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+  gap: 0.5rem;
+  /* ADD THIS TRANSITION */
+  transition: margin-bottom var(--transition-speed) ease-in-out;
+}
+
+/* ADD THIS NEW RULE */
+.prompt-summary-section.minimized .summary-group-1 {
+  margin-bottom: 0; /* Remove bottom margin when group 2 is hidden */
+}
+
+/* ... (other .summary-group-1 child styles remain the same) ... */
+
+/* Group 2: Date and title */
+.summary-group-2 {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem 0 0 1rem; /* Reduced padding */
+  /* ADD THIS TRANSITION */
+  transition: max-height var(--transition-speed) ease-in-out,
+              opacity var(--transition-speed) ease-in-out,
+              padding var(--transition-speed) ease-in-out,
+              margin-top var(--transition-speed) ease-in-out, /* In case you add margin-top later */
+              gap var(--transition-speed) ease-in-out;
+  overflow: hidden; /* Needed for max-height transition to work */
+  max-height: 200px; /* Estimate a large enough max-height for expanded state, adjust if needed */
+  opacity: 1;
+}
+
+/* ADD THIS NEW RULE */
+.prompt-summary-section.minimized .summary-group-2 {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 0;
+  gap: 0;
+}
+
+/* ... (other styles remain the same) ... */
+
+/* Ensure .dashboard-content has enough top padding for the EXPANDED header */
+/* This padding should NOT change during scroll */
+.dashboard-content {
+  margin-top: 0; /* Or remove if not needed, as padding-top handles the space */
+  padding: 0.75rem;
+  /* This padding-top is CRUCIAL for preventing overlap by the fixed header.
+     It should be at least the height of the fully expanded .prompt-summary-section.
+     Current estimate ~150px to 160px. Adjust if the header content changes. */
+  padding-top: 160px; 
+  margin-bottom:150px;
+  min-height: calc(100vh - 0px); /* Adjust if you want to account for something else */
+}
+
+
+
+/* Group 1: Navigation and actions */
+.summary-group-1 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+  gap: 0.5rem;
+}
+
+.back-arrow {
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  padding: 0rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 35px;
+  min-height: 35px;
+}
+
+.back-arrow:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.back-arrow svg {
+  fill: var(--white);
+  transition: fill var(--transition-speed) ease;
+  width: 35px;
+  height: 35px;
+}
+
+.back-arrow:hover svg {
+  fill: var(--green);
+}
+
+.summary-text {
+  flex: 1;
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-left: 0.2rem;
+}
+
+.like-btn {
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  min-height: 28px;
+  background-color:none;
+
+}
+
+.like-btn:hover {
+  background-color:none;
+}
+
+.like-btn svg {
+  fill: transparent;
+  stroke: var(--white);
+  stroke-width: 1.5;
+  transition: all var(--transition-speed) ease;
+  width: 25px;
+  height: 25px;
+}
+
+.like-btn.liked svg {
+  fill: #ff4444;
+  stroke: #ff4444;
+}
+
+.profile-icon {
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  padding: 0.4rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  min-height: 28px;
+}
+
+.profile-icon:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.profile-icon svg {
+  fill: var(--white);
+  transition: fill var(--transition-speed) ease;
+  width: 25px;
+  height: 25px;
+}
+
+.profile-icon:hover svg {
+  fill: var(--green);
+}
+
+/* Group 2: Date and title */
+.summary-group-2 {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem 0 0 1rem; /* Reduced padding */
+}
+
+.summary-date {
+  color: var(--greyed-out-text);
+  font-family: "Pretendard", sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.summary-title {
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* =======================================
+   DASHBOARD CONTENT (MOBILE)
+   ======================================= */
+.dashboard-content {
+  margin-top: 110px; /* Adjust based on actual height of prompt-summary-section */
+  padding: 0.75rem;
+  padding-top: 150px; /* Initial top padding */
+  min-height: calc(100vh - 110px);
+}
+
+.content-placeholder {
+  color: var(--white);
+  text-align: center;
+  padding: 1rem;
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.85rem;
+}
+
+/* =======================================
+   AI SUMMARY SECTION (MOBILE)
+   ======================================= */
+.ai-summary-section {
+  margin-bottom: 5rem;
+}
+
+/* Tabs */
+.summary-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0px;
+}
+
+.summary-tab {
+  padding: 0.6rem 0.8rem;
+  background-color: rgba(174, 234, 0, 0.2);
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.85rem;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  opacity: 0.5;
+  position: relative;
+  z-index: 1;
+}
+
+.summary-tab.active {
+  opacity: 1;
+  color: var(--green);
+  font-weight: 500;
+  z-index: 3;
+}
+
+/* Summary Box */
+.summary-box {
+  background-color: rgba(174, 234, 0, 0.2);
+  padding: 0.75rem;
+  position: relative;
+  z-index: 2;
+  border-radius: 0 0 50px 50px;
+}
+
+
+/* Title Section */
+.summary-box-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(174, 234, 0, 0.3);
+}
+
+.title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left:5px;
+  padding:.4rem;
+  background-color: rgba(174, 234, 0, 0.2);
+  border-radius:1000px;
+}
+
+.title-icon img {
+  width: 22px;
+  height: 22px;
+}
+
+.title-text {
+  flex: 1;
+  color: var(--green);
+  font-family: "Pretendard", sans-serif;
+  font-size: 1.2rem;
+  padding: 1rem 0;
+  font-weight: 700;
+}
+
+.collapse-btn {
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  border-radius: 4px;
+}
+
+.collapse-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.collapse-btn svg {
+  fill: var(--green);
+  transition: transform var(--transition-speed) ease;
+  width: 22px;
+  height: 22px;
+}
+
+.collapse-btn.collapsed svg {
+  transform: rotate(180deg);
+}
+
+/* Content Section */
+.summary-box-content {
+  padding-top: 1rem;
+  transition: max-height var(--transition-speed) ease, opacity var(--transition-speed) ease, padding
+    var(--transition-speed) ease;
+  max-height: 1000px;
+  opacity: 1;
+  overflow: hidden;
+}
+
+.summary-box-content.collapsed {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+}
+
+.placeholder-text {
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+/* =======================================
+   AI ANALYSIS CONTENT (MOBILE) - AUTOMATIC LAYOUT
+   ======================================= */
+.analysis-content {
+  padding: 1rem;
+  overflow: hidden;
+}
+
+.analysis-image-container {
+  float: left;
+  position: relative;
+  margin: 0 0.75rem 0.75rem 0;
+}
+
+.analysis-image {
+  width: 140px;
+  height: 175px;
+  border-radius: 6px;
+  object-fit: cover;
+  display: block;
+}
+
+.image-tag {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.4rem 0.5rem;
+  border-radius: 3px;
+  margin: 0 0 2px 2px;
+}
+
+.analysis-title {
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.4;
+}
+
+.analysis-paragraph {
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  font-size: .9rem;
+  line-height: 1.8;
+  margin: 0 0 10px 0;
+}
+
+.analysis-footer {
+  clear: left;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.italic-text {
+  font-style: italic;
+  color: var(--greyed-out-text);
+}
+
+.analysis-content::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* =======================================
+   STATS SECTION (MOBILE)
+   ======================================= */
+.stats-section {
+  border-top: 1px solid rgba(255, 255, 255, 0.6);
+  padding: 1rem 0rem 0rem 0rem;
+  margin-top: 1rem;
+}
+
+.stat-group {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 0.75rem;
+  gap: 0.75rem;
+  padding: 0 0 0 1rem;
+}
+
+
+.stat {
+  color: var(--green);
+  font-family: "Pretendard", sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.info-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border: none;
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+
+.info-btn:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.confidence-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.confidence-bar {
+  width: 100px;
+  height: 15px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.confidence-fill {
+  width: 75%;
+  height: 100%;
+  background-color: var(--green);
+  border-radius: 2px;
+}
+
+.confidence-text {
+  color: var(--green);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.btn-group {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.learn-btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background-color: rgba(255, 255, 255, 0.3);
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 2px 2px 2px 50px;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+
+.learn-btn:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.place-bet-btn {
+  flex: 1;
+  padding: 1rem;
+  background-color: var(--green);
+  color: var(--blue);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.9rem;
+  font-weight: bolder;
+  border: none;
+  text-align: center;
+  border-radius: 2px 2px 50px 2px;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+
+.place-bet-btn:hover {
+  background-color: #9dd600;
+}
+
+/* =======================================
+   LIVE ODDS & TEAM STATS SECTION (MOBILE)
+   ======================================= */
+.live-odds-section {
+  margin-bottom: 1.5rem;
+}
+
+.live-odds-header {
+  padding: 1.5rem 0.75rem 1rem 0.75rem;
+}
+
+.live-odds-title {
+  color: var(--green);
+  font-family: "Publica", sans-serif;
+  font-size: 2.8rem;
+  font-weight: lighter;
+  line-height: 2.5rem;
+  text-align: center;
+  margin-bottom: 1.8rem;
+}
+
+.live-odds-description-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.live-odds-description {
+  flex: 1;
+  color: var(--greyed-out-text);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.live-odds-collapse-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-color: rgba(174, 234, 0, 0.3);
+  border-radius: 6px;
+  border: none;
+  color: var(--green);
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  flex-shrink: 0;
+}
+
+.live-odds-collapse-btn:hover {
+  background-color: rgba(174, 234, 0, 0.4);
+}
+
+.live-odds-collapse-btn svg {
+  fill: var(--green);
+  transition: transform var(--transition-speed) ease;
+  width: 20px;
+  height: 20px;
+}
+
+.live-odds-collapse-btn.collapsed svg {
+  transform: rotate(180deg);
+}
+
+.live-odds-separator {
+  width: 100%;
+  height: 1px;
+  background-color: var(--separator-color);
+}
+
+.live-odds-content {
+  transition: max-height var(--transition-speed) ease, opacity var(--transition-speed) ease, padding
+    var(--transition-speed) ease;
+  max-height: 6000px;
+  opacity: 1;
+  overflow: hidden;
+  padding-top: 1rem;
+}
+
+.live-odds-content.collapsed {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+}
+
+.placeholder-content {
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+/* =======================================
+   ODDS SUBCATEGORY STYLES (MOBILE)
+   ======================================= */
+.odds-subcategory {
+  margin-bottom: 1rem;
+}
+
+.odds-subcategory .refresh-odds-btn {
+  width: 270px;
+  margin-top: 1.5rem;
+  margin-bottom: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+.subcategory-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0.75rem;
+  gap: 1rem;
+}
+
+.subcategory-title {
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+.subcategory-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.subcategory-collapse-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  border: none;
+  color: var(--white);
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+
+.subcategory-collapse-btn:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.subcategory-collapse-btn svg {
+  fill: var(--white);
+  transition: transform var(--transition-speed) ease;
+  width: 18px;
+  height: 18px;
+}
+
+.subcategory-collapse-btn.collapsed svg {
+  transform: rotate(180deg);
+}
+
+.subcategory-content {
+  transition: max-height var(--transition-speed) ease, opacity var(--transition-speed) ease, padding
+    var(--transition-speed) ease;
+  max-height: none;
+  opacity: 1;
+  overflow: hidden;
+  padding: 0 0rem 1.5rem 0rem;
+}
+
+.subcategory-content.collapsed {
+  max-height: 0;
+  opacity: 0;
+  padding: 0 0.5rem 0 0.5rem;
+}
+
+.subcategory-placeholder {
+  padding: 1rem;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+/* =======================================
+   SUBCATEGORY TABS STYLES (MOBILE)
+   ======================================= */
+.subcategory-tabs {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0;
+  overflow-x: auto;
+  padding: 0rem;
+  background-color: transparent;
+  border-radius: 0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.subcategory-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.subcategory-tab {
+  padding: 0.6rem 0.8rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.85rem;
+  border-radius: 6px 6px 0 0;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  opacity: 0.7;
+  white-space: nowrap;
+  margin-bottom: 0.4rem;
+}
+
+.subcategory-tab.active {
+  opacity: 1;
+  background-color: var(--light-blue-bg);
+  font-weight: 500;
+  margin-bottom: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.place-bet-tab {
+  background-color: rgba(174, 234, 0, 0.2);
+  color: var(--green);
+}
+
+.place-bet-tab.active {
+  background-color: rgba(174, 234, 0, 0.3);
+  margin-bottom: 0;
+}
+
+.subcategory-tab-content {
+  display: none;
+  width: 100%;
+  background-color: var(--light-blue-bg);
+  border-radius: 0 8px 8px 8px;
+  padding: 0 .8rem 1.5rem .8rem;
+}
+
+.subcategory-tab-content.active {
+  display: block;
+}
+
+/* =======================================
+   SPORTSBOOK TABLE STYLES (MOBILE)
+   ======================================= */
+.sportsbook-table {
+  width: 100%;
+  border-radius: 0px;
+  overflow: hidden;
+  background-color: var(--light-blue-bg);
+  margin-bottom: 0;
+}
+
+.sportsbook-table-row {
+  display: flex;
+  border-bottom: 1px solid var(--separator-color);
+  padding: 1rem 0;
+}
+
+.sportsbook-table-row:last-child {
+  border-bottom: none;
+}
+
+.header-row {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.table-column {
+  flex: 1;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.column-title {
+  color: var(--greyed-out-text);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.table-info-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border: none;
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+
+.table-info-btn:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.sportsbook-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.9rem;
+}
+
+.sportsbook-logo {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+.moneyline {
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.implied-percent {
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.9rem;
+}
+
+.table-separator {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.2);
+  margin: 1rem 0;
+}
+
+.value {
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.value.best {
+  color: var(--green);
+  background-color: rgba(174, 234, 0, 0.2);
+}
+
+.value.good {
+  color: var(--green);
+  background-color: rgba(174, 234, 0, 0.2);
+}
+
+.value.fair {
+  color: var(--white);
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.value.poor {
+  color: #ea5e00;
+  background-color: rgba(234, 94, 0, 0.3);
+}
+
+.sportsbook-table-row.selected {
+  background-color: rgba(16, 22, 28, 0.8);
+  border: 1px solid var(--green);
+  border-radius: 6px;
+  position: relative;
+}
+
+.sportsbook-table-row.selected::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: var(--green);
+  border-radius: 3px 0 0 3px;
+}
+
+/* =======================================
+   TEAM STATS SECTION (MOBILE)
+   ======================================= */
+.team-stats-section {
+  margin-top: 1.5rem;
+  background-color: var(--blue);
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.team-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.stat-block {
+  padding: .85rem 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stat-value {
+  font-family: "Publica", sans-serif;
+  font-size: 2rem;
+  font-weight: lighter;
+  color: var(--white);
+  margin-bottom: 0.3rem;
+}
+
+.stat-value.positive {
+  color: var(--green);
+}
+
+.stat-value.negative {
+  color: #ea5e00;
+}
+
+.stat-title {
+  /* This is for the small title under stat-value */
+  font-family: "Pretendard", sans-serif;
+  font-size: 1rem;
+  color: var(--greyed-out-text);
+  max-width: 80%;
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.stat-info-btn {
+  position: absolute;
+  top: 0;
+  right: -10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 100%;
+  border: none;
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+
+.stat-info-btn:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* === NEW Line Movement History Subcategory Styles === */
+.line-movement-history-group {
+  background-color: var(--light-blue-bg);
+  padding: 1rem;
+  border-radius: 4px;
+  color: var(--white);
+}
+
+.lmh-block {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem 1rem;
+}
+
+.lmh-block-info {
+  flex-grow: 1;
+  margin-right: 0rem;
+}
+
+.lmh-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.lmh-tag {
+  color: var(--green);
+  background-color: rgba(174, 234, 0, 0.3);
+  padding: 0.5rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.lmh-block-title {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--white);
+  margin-bottom: 0.4rem;
+  font-family: "Pretendard";
+}
+
+.lmh-block-description {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--greyed-out-text);
+  max-width:200px;
+  line-height: 1.4;
+}
+
+.lmh-block-value-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  min-width: 80px;
+}
+
+.lmh-image-text-group {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.lmh-block-image {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
+.lmh-block-number {
+  font-size: 1.8rem;
+  margin-top:-20px;
+  font-weight: 800;
+  font-family: "Publica", sans-serif;
+  color: var(--white);
+  line-height: 1;
+}
+
+.lmh-block-separator {
+  height: 1px;
+  background-color: var(--separator-color);
+  margin: 0.25rem 0;
+}
+
+.lmh-block:last-child .lmh-block-separator {
+  /* Hide separator for the very last block if it's directly followed by nothing */
+  display: none;
+}
+.lmh-block + .live-current-odds-separator {
+  /* If separator is after all blocks */
+  margin-top: 1rem; /* Add space if it's the last thing in the group before the next section */
+}
+
+.live-current-odds-separator {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--separator-color);
+  margin-bottom: 1rem;
+}
+
+.live-odds-group {
+  background-color: var(--blue);
+  padding: 3rem 2rem;
+  border-radius: 8px;
+  border: 1px solid var(--separator-color);
+  margin-bottom: 1rem; /* Space between multiple odds groups */
+}
+.live-odds-group:last-child {
+  margin-bottom: 0; /* No bottom margin for the last group */
+}
+
+.live-odds-group-main-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.live-odds-group-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.live-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.25rem;
+}
+
+.live-indicator-circle {
+  width: 10px;
+  height: 10px;
+  background-color: #ff4444;
+  border-radius: 50%;
+  animation: blinkAnimation 1.5s infinite ease-in-out;
+}
+
+.live-indicator-text {
+  color: #ff4444;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+@keyframes blinkAnimation {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+}
+
+.live-odds-group-title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--white);
+  line-height: 1.3;
+}
+
+.live-odds-group-date {
+  font-size: 0.75rem;
+  color: var(--greyed-out-text);
+}
+
+.live-odds-group-right {
+  text-align: right;
+}
+
+.live-odds-group-value {
+  font-family: "Publica", sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--green);
+  line-height: 1;
+}
+
+.odds-bet-btn {
+  margin-top: 0.75rem;
+  width: 100%;
+  padding: 1.2rem 1rem;
+  background-color: var(--green);
+  color: var(--blue);
+  font-family: "Pretendard", sans-serif;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color var(--transition-speed) ease;
+}
+
+.odds-bet-btn:hover {
+  background-color: #9dd600;
+}
+
+.refresh-odds-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 1.2rem 1rem;
+  background-color: var(--refresh-button-bg);
+  color: var(--green);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+}
+
+.refresh-odds-btn:hover {
+  background-color: var(--refresh-button-hover-bg);
+}
+
+.refresh-odds-btn .refresh-icon {
+  width: 18px;
+  height: 18px;
+  fill: var(--green);
+  transition: fill var(--transition-speed) ease, transform 0.5s linear;
+}
+.refresh-odds-btn .refresh-icon.rotating {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.refresh-odds-btn.cooldown {
+  background-color: var(--refresh-button-disabled-bg);
+  color: var(--refresh-button-disabled-text);
+  cursor: not-allowed;
+  font-weight: 400;
+}
+
+.refresh-odds-btn.cooldown:hover {
+  background-color: var(--refresh-button-disabled-bg);
+}
+
+.refresh-odds-btn.cooldown .refresh-icon {
+  display: none;
+}
+
+.refresh-odds-btn.cooldown .btn-text em {
+  font-style: normal;
+  font-weight: 500;
+  color: #ea5e00;
+}
+
+.refreshed-animation {
+  animation: pulseRefresh 0.6s ease-in-out;
+}
+
+@keyframes pulseRefresh {
+  0% {
+    opacity: 0.4;
+    transform: translateY(2px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === NEW: Team Performance Section Styles === */
+.team-performance-section {
+  background-color: var(--performance-group-bg);
+  padding: 1.5rem 1rem 1rem 1rem;
+  border-radius: 8px;
+  border-bottom-right-radius: 50px;
+  border-bottom-left-radius: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.odds-probability-group {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  padding: 1rem 0;
+}
+
+.odds-prob-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.odds-prob-value {
+  font-family: "Publica", sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+
+.odds-prob-title {
+  font-family: "Pretendard", sans-serif;
+  font-size: 1rem;
+  color: var(--greyed-out-text);
+  font-weight: 500;
+}
+
+.team-stats-section {
+  /* This is nested inside team-performance-section */
+  background-color: var(--blue);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-top: 0; /* Reset margin as it's now part of a group */
+}
+
+.last-games-section {
+  background-color: var(--blue);
+  padding: 2rem 1.2rem;
+  border-radius: 8px;
+}
+
+.game-history-cards {
+  display: flex;
+  justify-content: center;
+  gap: 0.2rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.game-card {
+  width: 25px;
+  height: 40px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Publica", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 900;
+  color: var(--white);
+}
+
+.game-card.win {
+  border: .6px var(--green) solid;
+  background-color: rgba(174, 234, 0, 0.2);
+  color: var(--green);
+}
+ 
+.game-card.loss {
+  background-color:rgba(234, 94, 0, 0.2);
+  color: rgba(234, 94, 0, 1);
+  border: .8px solid rgba(234, 94, 0, 1);
+}
+
+.game-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 0rem;
+}
+
+.summary-circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.summary-circle.green {
+  background-color: var(--green);
+}
+
+.summary-circle.red {
+  background-color: rgba(234, 94, 0, 1);
+}
+
+.summary-circle.white {
+  background-color: var(--white);
+}
+
+.summary-text {
+  /* This is for the text next to summary circles */
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.summary-text.green {
+  color: var(--green);
+}
+
+.summary-text.red {
+  color: rgba(234, 94, 0, 1);
+}
+
+.summary-text.white {
+  color: var(--white);
+}
+
+.injury-report-card {
+  border: 1px solid #eab300;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.injury-report-header {
+  background: linear-gradient(135deg, #db4d00 0%, #eab300 100%);
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease-in-out infinite;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@keyframes gradientShift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.warning-icon {
+  fill: var(--true-white);
+  width: 20px;
+  height: 20px;
+}
+
+.injury-report-title {
+  color: var(--true-white);
+  font-family: "Pretendard", sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.injury-report-body {
+  background-color: var(--blue);
+  padding: 2rem;
+}
+
+.injury-title {
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 1rem 0;
+}
+
+.injury-summary {
+  color: var(--greyed-out-text);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.injury-separator {
+  height: 1px;
+  background-color: var(--separator-color);
+  margin-bottom: 1rem;
+}
+
+.injury-source {
+  text-align: right;
+}
+
+.source-link {
+  color: var(--greyed-out-text);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.8rem;
+  text-decoration: underline;
+  font-weight: 400;
+}
+
+.source-link:hover {
+  text-decoration: underline;
+}
+
+.betbot-analysis-card {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.betbot-analysis-header {
+  background-color: rgba(39, 52, 0, 0.6);
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.analysis-icon {
+  fill: var(--green);
+  width: 18px;
+  height: 18px;
+}
+
+.betbot-analysis-title {
+  color: var(--green);
+  font-family: "Pretendard", sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.betbot-analysis-body {
+  background-color: rgba(174, 234, 0, 0.2);
+  padding: 2rem;
+}
+
+.analysis-text {
+  color: var(--green);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+/* ───────────────────────────────────────────────────────────
+   Betbot Analysis → Make sure confidence‐bar is visible
+   ─────────────────────────────────────────────────────────── */
+
+/* 1) Ensure the outer container is flex‐aligned */
+.analysis-confidence {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* space between bar+text and “?” button */
+  margin-top: 0.75rem; /* keep a little gap above it */
+}
+
+/* 2) Force the bar + “35%” into a single row */
+.analysis-confidence .confidence-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* 3) Make the “track” stand out more on a dark page */
+.analysis-confidence .confidence-bar {
+  width: 80px;                /* adjust if you need it wider/narrower */
+  height: 13px;                /* bar thickness */
+  background-color:rgba(234, 94, 0, 0.3); /* brighter gray */
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+/* 4) The red fill inside (35% wide) */
+.analysis-confidence .confidence-fill-red {
+  height: 100%;
+  background-color: #ff4444;  /* a solid red that stands out */
+  border-radius: 4px 0 0 4px; /* rounded on left end */
+}
+
+/* 5) The “35%” text next to it */
+.analysis-confidence .confidence-text {
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(234, 94, 0,1);
+}
+
+
+
+.team-performance-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.team-performance-buttons .learn-btn,
+.team-performance-buttons .place-bet-btn {
+  flex: 1;
+  padding: .9rem 1.3rem;
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 2px 2px 2px 50px;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+
+.team-performance-buttons .learn-btn {
+  background-color: rgba(255, 255, 255, 0.3);
+  color: var(--white);
+  border-radius: 2px 2px 2px 50px;
+}
+
+.team-performance-buttons .learn-btn:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.team-performance-buttons .place-bet-btn {
+  background-color: var(--green);
+  color: var(--blue);
+  font-weight: bolder;
+  border-radius: 2px 2px 50px 2px;
+}
+
+.team-performance-buttons .place-bet-btn:hover {
+  background-color: #9dd600;
+}
+
+/* === NEW: Players to Watch Section === */
+.players-to-watch-section {
+  padding: 1rem 0;
+}
+
+.players-section-title {
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-left: 0.5rem;
+}
+
+.player-cards-container {
+  display: flex;
+ 
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.player-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0rem;
+  padding: 1rem;
+  background-color: transparent;
+}
+
+.player-image-container {
+  flex-shrink: 0;
+}
+
+.player-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 100px;
+  object-fit: cover;
+  border: 0.8px solid var(--white);
+}
+
+.player-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-align: left;
+}
+
+.player-name {
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.player-stats {
+  color: var(--greyed-out-text);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 400;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.player-description-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.player-description {
+  color: var(--green);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  flex: 1;
+}
+
+.player-info-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background-color: rgba(174, 234, 0, 0.3);
+  border-radius: 50%;
+  border: none;
+  color: var(--green);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  flex-shrink: 0;
+}
+
+.player-info-btn:hover {
+  background-color: rgba(174, 234, 0, 0.4);
+}
+
+@media (max-width: 480px) {
+  .player-card {
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+  .player-image {
+    width: 80px;
+    height: 80px;
+  }
+  .player-name {
+    font-size: 1.2rem;
+  }
+  .player-stats {
+    font-size: 0.8rem;
+  }
+  .player-description {
+    font-size: 0.8rem;
+  }
+}
+
+/* === NEWS & MEDIA SECTION (SHARED STYLES) === */
+.news-media-section {
+  margin-bottom: 1.5rem;
+}
+
+.news-media-header {
+  padding: 1.5rem 0.75rem 1rem 0.75rem;
+}
+
+.news-media-title {
+  color: var(--green);
+  font-family: "Publica", sans-serif;
+  font-size: 2.9rem;
+  font-weight: 900;
+  line-height: 2.5rem;
+  text-align: left;
+  margin-bottom: 1.8rem;
+}
+
+.news-media-description-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.news-media-description {
+  flex: 1;
+  color: var(--greyed-out-text);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.news-media-collapse-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-color: rgba(174, 234, 0, 0.3);
+  border-radius: 6px;
+  border: none;
+  color: var(--green);
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  flex-shrink: 0;
+}
+
+.news-media-collapse-btn:hover {
+  background-color: rgba(174, 234, 0, 0.4);
+}
+
+.news-media-collapse-btn svg {
+  fill: var(--green);
+  transition: transform var(--transition-speed) ease;
+  width: 20px;
+  height: 20px;
+}
+
+.news-media-collapse-btn.collapsed svg {
+  transform: rotate(180deg);
+}
+
+.news-media-separator {
+  width: 100%;
+  height: 1px;
+  background-color: var(--separator-color);
+}
+
+.news-media-content {
+  transition: max-height var(--transition-speed) ease, opacity var(--transition-speed) ease, padding
+    var(--transition-speed) ease;
+  max-height: 5000px; /* Increased to accommodate more sub-categories */
+  opacity: 1;
+  overflow: hidden;
+  padding-top: 1rem;
+}
+
+.news-media-content.collapsed {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+}
+
+/* === SOCIAL BUZZ SUBCATEGORY === */
+.social-buzz-category .subcategory-content {
+  background-color: var(--blue);
+  padding: 0rem;
+  border-radius: 8px;
+}
+
+.social-card {
+  background-color: var(--social-card-bg);
+  border-radius: 8px;
+  padding: 2rem ;
+  margin-bottom: 1rem;
+  font-family: "Pretendard", sans-serif;
+}
+.social-card:last-child {
+  margin-bottom: 0;
+}
+
+.social-card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.user-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-info {
+  flex-grow: 1;
+}
+
+.user-name {
+  display: block;
+  font-weight: bold;
+  color: var(--white);
+  font-size: 1.2rem;
+}
+
+.user-tag {
+  display: block;
+  color: var(--greyed-out-text);
+  font-size: 1rem;
+}
+
+.post-date-info {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--greyed-out-text);
+  font-size: 1rem;
+}
+
+.calendar-icon svg {
+  /* Targeting SVG inside calendar-icon */
+  fill: currentColor; /* Inherit color from .post-date-info */
+  width: 15px;
+  height: 15px;
+}
+
+.social-card-body {
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.social-card-content-wrapper {
+  max-height: var(--social-card-initial-max-height);
+  overflow: hidden;
+  position: relative;
+  transition: max-height 0.5s ease-in-out;
+}
+
+.social-card-content-wrapper::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(to bottom, transparent, var(--social-card-bg));
+  pointer-events: none;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.social-card.expanded .social-card-content-wrapper {
+  max-height: 1000px;
+}
+
+.social-card.expanded .social-card-content-wrapper::after {
+  opacity: 0;
+}
+
+.post-text {
+  color: var(--white);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+  white-space: pre-line;
+}
+
+.post-text .hashtag {
+  color: var(--green);
+  font-weight: 500;
+}
+
+.post-image {
+  width: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+  display: block;
+}
+
+.see-full-post {
+  display: inline-block;
+  color: var(--white);
+  font-size: 0.8rem;
+  text-decoration: none;
+  padding: 0.3rem 0;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: color 0.2s ease;
+}
+
+.see-full-post:hover {
+  color: var(--green);
+}
+
+.expand-arrow {
+  display: inline-block;
+  margin-left: 0.25rem;
+  transition: transform 0.3s ease-in-out;
+}
+.expand-arrow svg {
+  /* Style the SVG directly */
+  width: 12px;
+  height: 12px;
+  stroke: currentColor; /* Inherit color */
+}
+
+.social-card.expanded .expand-arrow {
+  transform: rotate(180deg);
+}
+
+.social-card-footer {
+  display: flex;
+  gap: 1rem;
+  color: var(--greyed-out-text);
+  font-size: 0.8rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--separator-color);
+}
+
+.post-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.stat-icon svg {
+  /* Targeting SVG inside stat-icon */
+  fill: currentColor; /* Inherit color from .post-stat */
+  width: 14px;
+  height: 14px;
+}
+
+/* === LATEST NEWS SUBCATEGORY === */
+.latest-news-category .subcategory-content {
+  padding: 0rem;
+  background-color: var(--blue); /* Or transparent if odds-subcategory handles it */
+  border-radius: 8px;
+}
+
+.news-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.news-card {
+  background-color: var(--social-card-bg); /* #171F28 */
+  border-radius: 6px;
+  padding: 2rem 3rem;
+}
+
+.news-card-title-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.news-source-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.news-source-image {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+.news-source-name {
+  color: var(--greyed-out-text);
+  font-size: 0.8rem;
+}
+
+.news-date {
+  color: var(--greyed-out-text);
+  font-size: 0.8rem;
+}
+
+.news-card-body-section {
+  /* No specific styles needed for the container itself */
+}
+
+.news-body-title {
+  font-size: 1.5rem; /* Adjusted size */
+  color: var(--white);
+  font-weight: 600;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+
+.news-body-paragraph-wrapper {
+  max-height: 4.8em; /* Approx 3 lines if line-height is 1.6 */
+  overflow: hidden;
+  position: relative;
+  transition: max-height 0.35s ease-in-out;
+  margin-bottom: 0.5rem;
+}
+
+.news-body-paragraph-wrapper.expanded {
+  max-height: 1000px; /* Large enough for full content */
+}
+
+.news-body-paragraph {
+  color: var(--light-grey);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  /* margin-bottom is handled by wrapper now */
+}
+
+.read-more-btn {
+  background: none;
+  border: none;
+  color: var(--green);
+  cursor: pointer;
+  padding: 0.25rem 0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-top: 0.25rem;
+  transition: color var(--transition-speed) ease;
+}
+
+.read-more-btn:hover {
+  color: var(--light-green);
+}
+
+/* =========================
+   Video Gallery Styles (Updated)
+   ========================= */
+
+/* Container for horizontal scrolling */
+.video-gallery-container {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  width: 100%;            /* use 100% of parent, not 100vw to avoid overflow */
+  gap: 1rem;
+  padding: 1rem 0 0 0;
+  -ms-overflow-style: none;  /* hide IE/Edge scrollbar */
+  scrollbar-width: none;     /* hide Firefox scrollbar */
+}
+
+.video-gallery-container::-webkit-scrollbar {
+  display: none;             /* hide Chrome/Safari scrollbar */
+}
+
+/* Each slide now uses 100% of container's width (not viewport) */
+.video-slide {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  box-sizing: border-box;
+  padding: 0;                /* remove extra padding so it fits exactly */
+}
+
+/* Thumbnail wrapper: maintain 16:9 ratio and fill slide width */
+.video-thumbnail {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;    /* 16:9 aspect ratio */
+  border: 2px solid var(--green);
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: #000;
+}
+
+/* Thumbnail image absolutely fills its wrapper */
+.video-thumbnail img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;         /* fill the container without distortion */
+}
+
+/* iframe also fills the same region when video is playing */
+.video-thumbnail iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Play button centered over the thumbnail */
+.play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  color: var(--green);
+  font-size: 8rem;
+  cursor: pointer;
+  z-index: 2;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+/* Title below each video */
+.video-title {
+  margin: 1rem 0 1rem 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--white);
+  padding: 0 1rem;         /* add horizontal padding to match slide gap */
+  box-sizing: border-box;
+}
+
+/* Description under the title */
+.video-description {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--greyed-out-text);
+  padding: 0 1rem 1rem;    /* add bottom padding */
+  box-sizing: border-box;
+}
+
+/* Indicators container centered below slides */
+.video-indicators {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  width: 100%;              /* ensure it never extends beyond parent */
+  box-sizing: border-box;
+}
+
+/* Each dot */
+.indicator {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background-color: transparent;
+  border:1px solid rgba(255, 255, 255, 0.654);
+  cursor: pointer;
+}
+
+/* Active dot uses the green variable */
+.indicator.active {
+  background-color: var(--green);
+    border:1px solid var(--green);
+}
+
+/* Ensure the subcategory container itself doesn’t overflow horizontally */
+#video-gallery-content {
+  overflow-x: hidden;
+  width: 100%;              /* clamp to parent width */
+  box-sizing: border-box;
+}
+
+/* =======================================
+   Alternative Picks & Storylines Section
+   (Match styling of other main section headers)
+   ======================================= */
+
+/* Container for the entire "Alternative Picks & Storylines" section */
+.alt-picks-section {
+  margin-bottom: 1.5rem; /* same bottom spacing as other sections */
+}
+
+/* Header padding matches .live-odds-header and .news-media-header */
+.alt-picks-header {
+  padding: 1.5rem 0.75rem 1rem 0.75rem;
+}
+
+/* H2 Title styling identical to .live-odds-title / .news-media-title */
+.alt-picks-title {
+  color: var(--green);
+  font-family: "Publica", sans-serif;
+  font-size: 2.9rem;
+  font-weight: 900;
+  line-height: 2.5rem;
+  text-align: left;
+  margin-bottom: 1.8rem;
+}
+
+/* Description row under the title (same layout as .live-odds-description-row) */
+.alt-picks-description-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Description text styling (same as .live-odds-description) */
+.alt-picks-description {
+  flex: 1;
+  color: var(--greyed-out-text);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Collapse button styling matches .live-odds-collapse-btn / .news-media-collapse-btn */
+.alt-picks-collapse-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-color: rgba(174, 234, 0, 0.3);
+  border-radius: 6px;
+  border: none;
+  color: var(--green);
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  flex-shrink: 0;
+}
+
+.alt-picks-collapse-btn:hover {
+  background-color: rgba(174, 234, 0, 0.4);
+}
+
+.alt-picks-collapse-btn svg {
+  fill: var(--green);
+  width: 20px;
+  height: 20px;
+  transition: transform var(--transition-speed) ease;
+}
+
+/* Rotate arrow when collapsed (same behavior as other collapse buttons) */
+.alt-picks-collapse-btn.collapsed svg {
+  transform: rotate(180deg);
+}
+
+/* Separator line below description (same as .live-odds-separator / .news-media-separator) */
+.alt-picks-separator {
+  width: 100%;
+  height: 1px;
+  background-color: var(--separator-color);
+  margin-bottom: 1rem;
+}
+
+/* Content container for all team cards (mirror .news-media-content) */
+.alt-picks-content {
+  transition:
+    max-height var(--transition-speed) ease,
+    opacity var(--transition-speed) ease,
+    padding var(--transition-speed) ease;
+  max-height: 5000px;   /* large enough to accommodate multiple cards */
+  opacity: 1;
+  overflow: hidden;
+  padding-top: 1rem;
+}
+
+.alt-picks-content.collapsed {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+}
+/* =======================================
+   Team Card Styles (Content Expands Inside)
+   ======================================= */
+
+   
+
+/* 1) Outer wrapper holds border, background, and rounded corners */
+.team-card {
+  margin: 0.5rem 0;
+  background: linear-gradient(90deg, #1E2934, #2d3e4f00 );
+  background-size: 200% 200%;
+  animation: gradient-slide 4s ease infinite;
+  border: 0.8px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  overflow: hidden;         /* ensure content stays inside rounded border */
+  display: flex;
+  flex-direction: column;
+  padding:1.5rem 1rem;
+}
+
+/* 2) Header has transparent background now, but still pads the content */
+.team-card-header {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  background: transparent;  /* removed gradient/background from header */
+    position: relative;
+}
+
+/* 3) Logo on the left */
+.team-card-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.75rem;
+}
+
+/* 4) Team name centered */
+.team-card-name {
+  flex: 1;
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  padding-right: 1rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* 5) Expand/collapse button on the right */
+.team-card-expand-btn {
+  width: 28px;
+  height: 28px;
+  background-color: rgba(255, 255, 255, 0.148);
+  border-radius: 6px;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background-color var(--transition-speed) ease;
+}
+
+.team-card-expand-btn:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.team-card-expand-btn.collapsed svg {
+  transform: rotate(180deg);
+}
+
+/* 6) Content panel now sits inside the same .team-card box */
+.team-card-content {
+  transition:
+    max-height var(--transition-speed) ease,
+    opacity var(--transition-speed) ease,
+    padding var(--transition-speed) ease;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  padding: 0 0.75rem;       /* horizontal padding matches header’s side padding */
+  background-color: transparent; /* slight background differentiation */
+}
+
+/* Adjust padding of paragraph inside */
+.team-card-content p {
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin: 0.75rem 0;
+}
+
+/* 7) When expanded, allow natural height inside the card */
+.team-card-content:not(.collapsed) {
+  max-height: none;         /* let content grow to its full height */
+  opacity: 1;
+  overflow: visible;        /* show all child elements */
+  padding-top: 0.75rem;     /* add top padding */
+  padding-bottom: 0.75rem;  /* add bottom padding */
+}
+
+.team-card-content .team-performance-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: transparent; /* inherit card’s gradient */
+  color: var(--white);
+  padding: 0; /* we’ll handle padding per subsection */
+}
+.team-card-content .last-games-section{
+  padding:0;
+  margin:2rem 0;
+  background-color:transparent;
+}
+.team-card-content .injury-report-body {
+  background-color:transparent;
+}
+
+
+.team-card-content .team-performance-section .analysis-text {
+  padding:0 0 15px 0;
+ color:var(--green);
+}
+
+.team-card-content .team-performance-section button {
+  border-radius: 5px;
+}
+
+.analysis-confidence .confidence-bar {
+  background-color: rgba(106, 255, 0, 0.2);
+}
+
+.analysis-confidence .confidence-fill-red {
+  background-color: var(--green);
+}
+
+.analysis-confidence .confidence-text {
+  color: var(--green);
+}
+
+
+/* 8) Gradient animation keyframes (same as before) */
+@keyframes gradient-slide {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* =======================================
+   Related Storylines Sub‐category Header Styles
+   (Exact match to other subcategory headers)
+   ======================================= */
+
+   .related-storylines-category {
+    margin-top:50px;
+   }
+
+.related-storylines-category .subcategory-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background-color: transparent; /* match existing header background */
+  border-bottom: 1px solid var(--separator-color);
+}
+
+.related-storylines-category .subcategory-title {
+  font-family: "Pretendard", sans-serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--white);
+  margin: 0;
+}
+
+/* Button group on right */
+.related-storylines-category .subcategory-btn-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Collapse arrow button: same circular white-30% background */
+.related-storylines-category .subcategory-collapse-btn {
+  width: 32px;
+  height: 32px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border: none;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease;
+}
+
+.related-storylines-category .subcategory-collapse-btn:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.related-storylines-category .subcategory-collapse-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: var(--white);
+}
+
+.related-storylines-category .subcategory-collapse-btn.collapsed svg {
+  transform: rotate(180deg);
+}
+
+
+/* =======================================
+   Storyline Card Styles
+   ======================================= */
+
+.storyline-card {
+  background: linear-gradient(90deg, #1E2934, transparent);
+  background-size: 200% 200%;
+  animation: gradient-slide 4s ease infinite;
+  border: 0.8px solid rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  overflow: hidden;
+  margin-top:2rem;
+  margin-bottom: 0rem;
+  display: flex;
+  flex-direction: column;
+  padding:1.5rem;
+}
+
+/* Header: sport tag + save icon */
+.storyline-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+.story-sport-tag {
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--green);
+  background-color: rgba(172, 255, 47, 0.15);
+  padding:.2rem .5rem;
+  border-radius: 2px;
+}
+
+.storyline-save-btn {
+  background: transparent;
+  border: none;
+  color: var(--white);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-speed) ease;
+}
+
+.storyline-save-btn:hover {
+  color: rgba(174, 234, 0, 0.8);
+}
+
+/* Body: icon + text */
+.storyline-card-body {
+  display: flex;
+  align-items: flex-start;
+  padding: 0.5rem 1rem;
+}
+
+.storyline-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 0.75rem;
+}
+
+.storyline-text {
+  flex: 1;
+}
+
+.storyline-title {
+  margin: 0;
+  font-family: "Pretendard", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--white);
+}
+
+.storyline-description {
+  margin: 1rem 0 1rem 0;
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.875rem;
+  color: var(--greyed-out-text);
+  font-style: italic;
+}
+
+/* Footer: data + confidence + buttons */
+.storyline-card-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0 1rem 1rem;
+}
+
+/* 4) First Row: Odds and Best Sportsbook side by side */
+.story-card-data-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.875rem;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+}
+
+.story-data-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.story-data-label {
+  font-weight: 500;
+}
+
+.story-data-value {
+  font-weight: 600;
+}
+
+/* 5) Second Row: Pick Confidence text + full-width confidence bar */
+.story-card-confidence {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.story-card-confidence-label {
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.875rem;
+  color: var(--white);
+  font-weight: 500;
+}
+
+.confidence-bar {
+  width: 100%;
+  height: 15px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.confidence-fill {
+  width: 38%; /* adjust percentage as needed */
+  height: 100%;
+  background-color: var(--green);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* 6) Button group */
+.storyline-btn-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top:1rem;
+}
+
+.storyline-detail-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.2);
+  border: 0px solid var(--white);
+  color: var(--white);
+  border-radius: 6px;
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.875rem;
+  font-weight: 400;
+  padding: 0.8rem 0.75rem;
+  cursor: pointer;
+  transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+}
+
+.storyline-detail-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.storyline-place-bet-btn {
+  flex: 1;
+  background: var(--green);
+  border: none;
+  color: var(--black);
+  border-radius: 6px;
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.8rem 0.75rem;
+  cursor: pointer;
+  transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+}
+
+.storyline-place-bet-btn:hover {
+  background-color: rgba(174, 234, 0, 0.8);
+}
+
+
+#related-storylines-content .storyline-card:nth-child(1) .confidence-bar {
+  background-color:rgba(234, 94, 0, 0.3);
+}
+
+#related-storylines-content .storyline-card:nth-child(1) .confidence-bar .confidence-fill {
+  width: 38%;
+  background-color:rgba(234, 94, 0,1);
+}
+
+#related-storylines-content .storyline-card:nth-child(2) .confidence-bar {
+  background-color:rgba(234, 94, 0, 0.3);
+}
+
+#related-storylines-content .storyline-card:nth-child(2) .confidence-bar .confidence-fill {
+  width: 42%;
+  background-color:rgba(234, 94, 0,1);
+}
+
+#related-storylines-content .storyline-card:nth-child(3) .confidence-bar {
+  background-color: rgba(172, 255, 47, 0.20);
+}
+
+#related-storylines-content .storyline-card:nth-child(3) .confidence-bar .confidence-fill {
+  width: 65%;
+  background-color: var(--green);
+}
+
+/* Gradient animation (same keyframes used elsewhere) */
+@keyframes gradient-slide {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+/* =======================================
+   CHAT INPUT BAR SECTION
+   ======================================= */
+.chat-input-bar-section {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  box-sizing: border-box; /* Ensures padding and border are included in width/height */
+  background-color: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(100px);
+  -webkit-backdrop-filter: blur(100px);
+  border-top-left-radius: 35px;
+  border-top-right-radius: 35px;
+  padding: 0.8rem; /* Padding on all sides of the bar */
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.25);
+  transition: transform 0.3s ease-in-out; /* For smooth hide/show animation */
+}
+
+.chat-input {
+  width: 100%; /* Takes full width of the parent's content area */
+  padding: 0.9rem 1.25rem;
+  background-color: transparent;
+  border: 0px solid rgba(255, 255, 255, 0.15); /* Currently no border */
+  border-radius: 25px;
+  color: var(--white);
+  font-family: "Pretendard", sans-serif;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color var(--transition-speed) ease, background-color var(--transition-speed) ease;
+  box-sizing: border-box; /* Inherited, but explicit for clarity */
+}
+
+.chat-input::placeholder {
+  color: rgba(255, 255, 255, 1);
+  opacity: 0.5;
+}
+
+.chat-input:focus {
+  /* Consider adding a visible border or a more distinct background on focus if the current one is too subtle */
+  border-color: var(--green); /* This will only show if border-width > 0 */
+  background-color: transparent;
+}
+
+.chat-separator {
+  height: 1px;
+  width: 100%; /* Takes full width of the parent's content area */
+  background-color: var(--separator-color);
+  margin: 0rem 0;
+  box-sizing: border-box; /* Inherited */
+}
+
+.chat-actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0.25rem; /* Internal padding for spacing icons from edges of this row */
+  box-sizing: border-box; /* Inherited */
+}
+
+.chat-actions-left,
+.chat-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.chat-action-btn {
+  background-color: transparent;
+  border: none;
+  padding: 0.4rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color var(--transition-speed) ease;
+}
+
+.chat-action-btn svg {
+  fill: var(--grey);
+  width: 22px;
+  height: 22px;
+  transition: fill var(--transition-speed) ease;
+}
+
+.chat-action-btn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.chat-action-btn:hover svg {
+  fill: var(--white);
+}
+
+.chat-send-btn svg {
+  fill: var(--white);
+}
+
+.chat-send-btn:hover svg {
+  fill: var(--light-green);
+}
+
+/* In your dashboard-styles.css */
+.chat-input-bar-section {
+    /* ... your existing styles for position: fixed, bottom: 0, left: 0, right: 0, etc. ... */
+    transition: transform 0.3s ease-in-out;
+}
+
+.chat-input-bar-section.chat-bar-hidden {
+    transform: translateY(100%); /* Slides it down out of view */
+}

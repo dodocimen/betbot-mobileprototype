@@ -1,0 +1,719 @@
+:root {
+--primary-blue: #10161C;
+--secondary-blue: #1a212e;
+    --text-white: #ededed;
+    --text-grey: #8e8e93;
+    --accent-green: #aeea00;
+    --accent-green-bg-30: rgba(174, 234, 0, 0.3);
+    --separator-color: rgba(255, 255, 255, 0.1);
+    --button-hover-bg: rgba(255, 255, 255, 0.08);
+    --chat-bar-bg: rgba(30, 41, 52, 0.85);
+    --font-primary: "Pretendard", sans-serif;
+    --nav-height: 60px;
+    --chat-bar-padding-vertical: 0.8rem;
+    --chat-bar-padding-horizontal: 1rem;
+    --sidebar-width: clamp(220px, 30vw, 320px);
+    --transition-speed: 0.3s;
+    --blur-intensity: 8px;
+
+    /* Filter Popup Customization Variables */
+    --filter-popup-width-min: 300px;
+    --filter-popup-width-preferred: 90vw;
+    --filter-popup-width-max: 500px;
+    --filter-popup-background-color: #1a1f2751;
+    --filter-popup-border: 1px solid var(--separator-color);
+    --filter-popup-border-radius: 12px;
+    --filter-popup-box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    --filter-popup-padding: 2rem 1rem;
+    --filter-popup-initial-offset-y: 10px;
+    --filter-popup-margin-from-chat-bar: 20px;
+    --filter-popup-backdrop-blur: 10px; /* Adjust this value to control blur intensity */
+
+    --filter-popup-header-padding-bottom: 0.75rem;
+    --filter-popup-header-margin-bottom: 1rem;
+    --filter-popup-header-border-bottom: 1px solid var(--separator-color);
+    --filter-popup-title-font-size: 1rem;
+    --filter-popup-title-font-weight: 400;
+    --filter-popup-title-color: var(--text-white);
+    --filter-popup-close-btn-hover-bg: var(--button-hover-bg);
+    --filter-popup-close-btn-hover-icon-fill: var(--accent-green);
+
+    --filter-popup-content-gap: 0.75rem;
+
+    --filter-option-btn-padding: 0.6rem 1rem;
+    --filter-option-btn-bg-color: rgba(255, 255, 255, 0.1);
+    --filter-option-btn-text-color: var(--text-white);
+    --filter-option-btn-border: 0px solid var(--text-white);
+    --filter-option-btn-border-radius: 6px; /* MODIFIED from 20px */
+    --filter-option-btn-font-size: 0.9rem;
+    --filter-option-btn-hover-bg-color: var(--button-hover-bg);
+    --filter-option-btn-hover-border-color: var(--text-grey);
+    --filter-option-btn-selected-bg-color: rgba(172, 255, 47, 0.2);
+    --filter-option-btn-selected-text-color: var(--accent-green);
+    --filter-option-btn-selected-border-color: rgba(255, 255, 255, 0);
+    --filter-option-btn-selected-font-weight: 500;
+    
+
+    /* Other existing variables */
+  --trends-section-height: 75px; /* INCREASED from 60px to better fit 2 lines of text */
+    --trend-card-width: 250px;
+    --trend-card-img-size: 16px; /* Keeping this small as per your last CSS */
+    --chat-main-input-area-base-height-approx: 80px;
+
+    
+
+      --storyline-glow-diameter: 45vw; /* Diameter of the glow effect, adjust as needed */
+    --storyline-glow-blur: 55px;
+    --storyline-glow-opacity-start: 0.8;
+    --storyline-glow-opacity-end: 2;
+    --storyline-glow-gradient-start: rgba(174, 234, 0, 0.8);
+    --storyline-glow-gradient-mid: rgba(174, 234, 0, 0.05);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    user-select:none;
+    -moz-user-select: none;
+}
+
+html {
+    height: 100vh;
+    overflow: hidden;
+    user-select:none;
+    -moz-user-select: none;
+}
+
+body {
+  user-select: none;
+  -moz-user-select: none;
+    font-family: var(--font-primary);
+    background-color: var(--primary-blue);
+    color: var(--text-white);
+    line-height: 1.6;
+    overflow: hidden;
+    position: relative;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+body.sidebar-open > .top-nav,
+body.sidebar-open > .main-content,
+body.sidebar-open > .trends-section,
+body.sidebar-open > .chat-input-bar-section {
+    filter: blur(var(--blur-intensity));
+}
+
+button {
+    background: none;
+    border: none;
+    color: inherit;
+    font-family: inherit;
+    cursor: pointer;
+}
+span.green{
+  color:#aeea00;
+}
+a {
+    color: var(--accent-green);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+ul {
+    list-style: none;
+}
+
+.top-nav {
+    position: fixed;
+    top: 10px;
+    left: 0;
+    right: 0;
+    height: var(--nav-height);
+    background-color: transparent;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 1000;
+    transition: filter var(--transition-speed) ease;
+    flex-shrink: 0;
+}
+
+.nav-container {
+    max-width: 1200px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.hamburger-menu,
+.user-profile-button,
+.close-sidebar-button,
+.close-filter-popup-btn {
+    padding: 0.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color var(--transition-speed) ease;
+}
+
+.hamburger-menu svg,
+.user-profile-button svg,
+.close-sidebar-button svg,
+.close-filter-popup-btn svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--text-white);
+    transition: fill var(--transition-speed) ease;
+}
+.close-filter-popup-btn svg {
+    width: 20px;
+    height: 20px;
+}
+.hamburger-menu:hover,
+.user-profile-button:hover,
+.close-sidebar-button:hover,
+.close-filter-popup-btn:hover {
+    background-color: var(--button-hover-bg);
+}
+.hamburger-menu:hover svg,
+.user-profile-button:hover svg,
+.close-sidebar-button:hover svg {
+    fill: var(--accent-green);
+}
+.close-filter-popup-btn:hover svg {
+    fill: var(--filter-popup-close-btn-hover-icon-fill);
+}
+.close-filter-popup-btn:hover {
+    background-color: var(--filter-popup-close-btn-hover-bg);
+}
+
+
+.logo-text {
+    font-family: "Publica", var(--font-primary);
+    font-size: 1.2rem;
+    font-weight: 200;
+    color: var(--text-white);
+    text-decoration: none;
+}
+.logo-text:hover {
+    color: var(--accent-green);
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background-color: var(--secondary-blue);
+    border-right: 1px solid var(--separator-color);
+    box-shadow: 2px 0 15px rgba(0,0,0,0.2);
+    transform: translateX(-100%);
+    transition: transform var(--transition-speed) ease-in-out, visibility var(--transition-speed) ease-in-out;
+    z-index: 1010;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    visibility: hidden;
+}
+
+.sidebar.active {
+    transform: translateX(0);
+    visibility: visible;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--separator-color);
+    margin-bottom: 1rem;
+}
+
+.sidebar-nav ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sidebar-nav a {
+    display: block;
+    padding: 0.75rem 1rem;
+    color: var(--text-white);
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav a.active-link {
+    background-color: var(--accent-green);
+    color: var(--primary-blue);
+}
+
+.page-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition-speed) ease, visibility var(--transition-speed) ease;
+    z-index: 1005;
+}
+
+.page-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.main-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-top: var(--nav-height);
+    position: relative;
+    z-index: 1;
+    transition: filter var(--transition-speed) ease;
+}
+
+.hero-section {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem 1rem;
+    background-color: var(--primary-blue);
+    min-height: calc(100% - var(--nav-height));
+    overflow: visible;
+}
+
+.hero-container{
+   position: relative; /* Ensure it's a positioning context for the glow effect */
+    display: flex; /* If you want to center h1 easily */
+    justify-content: center;
+    align-items: center;
+    overflow: visible;
+}
+
+
+
+.hero-container h1 {
+    font-family: "Publica", var(--font-primary);
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: var(--text-white); /* Fallback color */
+    line-height: 1.2;
+    margin-top: 0vh;
+    position: relative; 
+    z-index: 2; 
+
+    /* New properties for gradient text animation */
+    background: linear-gradient(
+        90deg, 
+        var(--accent-green), 
+        rgba(255, 255, 255, 0.475),
+        var(--accent-green)
+    );
+    background-size: 200% auto; /* Make gradient wider for animation */
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent; /* For older WebKit browsers */
+    color: transparent; /* Make the actual text color transparent */
+    animation: textGradientAnimation 8s linear infinite;
+}
+
+@keyframes textGradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.storyline-glow-effect {
+    position: absolute;
+    left: 80%;
+    top: 0vh; /* This will center it in hero-container, adjust if h1 is not perfectly centered */
+    transform: translate(-50%, -50%); /* Center the element itself */
+    width: var(--storyline-glow-diameter);
+    height: var(--storyline-glow-diameter); /* Make width and height equal for a circle */
+    background: radial-gradient(circle, var(--storyline-glow-gradient-start) 0%, var(--storyline-glow-gradient-mid) 60%, transparent 100%);
+    filter: blur(var(--storyline-glow-blur));
+    opacity: var(--storyline-glow-opacity-start);
+    border-radius: 100%; /* Ensures it's a circle */
+    z-index: 1; /* Below the h1 text (which will be z-index: 2) */
+    pointer-events: none;
+    animation: gradientFloatIndependent 6s infinite alternate, flickerIndependent 2.5s infinite alternate;
+}
+
+/* Animations - can be the same or slightly adjusted if needed */
+@keyframes gradientFloatIndependent {
+    0% {
+        transform: translate(-50%, -52%) scale(0.9); /* Keep translate for centering */
+        opacity: var(--storyline-glow-opacity-start);
+    }
+    100% {
+        transform: translate(-48%, -48%) scale(1.1); /* Keep translate for centering */
+        opacity: var(--storyline-glow-opacity-end);
+    }
+}
+
+@keyframes flickerIndependent {
+    0% {
+        opacity: var(--storyline-glow-opacity-start);
+    }
+    50% {
+        opacity: var(--storyline-glow-opacity-end);
+    }
+    100% {
+        opacity: calc(var(--storyline-glow-opacity-start) + 0.05);
+    }
+}
+
+.trends-section {
+    position: fixed;
+    left: 0;
+    right: 0;
+    height: var(--trends-section-height);
+    z-index: 890;
+    overflow: hidden;
+    background-color: transparent;
+    transition: bottom var(--transition-speed) ease, filter var(--transition-speed) ease;
+    flex-shrink: 0;
+}
+
+.trends-cards-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 0 calc(50vw - var(--trend-card-width) / 2 - 0.5rem);
+    height: 100%;
+    align-items: center;
+    gap: 1rem;
+}
+
+.trends-cards-container::-webkit-scrollbar {
+    display: none;
+}
+
+.trend-card {
+    flex: 0 0 var(--trend-card-width);
+    scroll-snap-align: center;
+    height: calc(var(--trends-section-height) - 1.5rem);
+    background-color: #1e293481;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+}
+
+.trend-card img {
+    width: var(--trend-card-img-size);
+    height: var(--trend-card-img-size);
+    object-fit: cover;
+    margin-right: 0.75rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.trend-card p {
+    font-size: 0.8rem;
+    color: white;
+    font-weight: 500;
+    line-height: 1.3;
+    flex-grow: 1;
+}
+
+.chat-input-bar-section {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    box-sizing: border-box;
+    background-color: var(--chat-bar-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    padding: var(--chat-bar-padding-vertical) var(--chat-bar-padding-horizontal);
+    z-index: 900;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.25);
+    transition: filter var(--transition-speed) ease, height var(--transition-speed) ease;
+    max-height: 40vh;
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.chat-main-input-area {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap-reverse;
+    align-content: flex-end;
+    gap: 0.5rem;
+    padding: 0.25rem 0;
+    margin-bottom: 0.5rem;
+    min-height: 30px;
+}
+
+.filter-ellipsis-btn,
+.active-filter-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--accent-green);
+    background-color: rgba(172, 255, 47, 0.2);
+    border-radius: 5px;
+    transition: background-color var(--transition-speed) ease, opacity var(--transition-speed) ease;
+}
+.filter-ellipsis-btn {
+    color:white;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.filter-ellipsis-btn:hover,
+.active-filter-btn:hover {
+    background-color: rgba(174, 234, 0, 0.5);
+}
+
+.filter-popup {
+    /* ... other styles ... */
+    background-color: rgba(var(--filter-popup-background-color-rgb, 44, 53, 66), 0.85); /* Optional: Add some transparency to the popup background */
+    backdrop-filter: blur(var(--filter-popup-backdrop-blur));
+    -webkit-backdrop-filter: blur(var(--filter-popup-backdrop-blur)); /* For Safari */
+    /* ... other styles ... */
+}
+
+.chat-input {
+    width: 100%;
+    padding: 0.2rem 1.25rem;
+    background-color: transparent;
+    border: none;
+    border-radius: 20px;
+    color: var(--text-white);
+    font-family: var(--font-primary);
+    font-size: 1rem;
+    outline: none;
+}
+
+.chat-input::placeholder {
+    color: var(--text-grey);
+    opacity: 0.8;
+}
+
+.chat-separator {
+    height: 1px;
+    width: 100%;
+    background-color: var(--separator-color);
+    margin-top: 0.25rem;
+}
+
+.chat-actions-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.25rem;
+}
+
+.chat-actions-left,
+.chat-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.chat-action-btn {
+    background-color: transparent;
+    border: none;
+    padding: 0.4rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color var(--transition-speed) ease;
+}
+
+.chat-action-btn svg {
+    fill: var(--text-grey);
+    width: 22px;
+    height: 22px;
+    transition: fill var(--transition-speed) ease;
+}
+
+.chat-action-btn:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.chat-action-btn:hover svg {
+    fill: var(--text-white);
+}
+
+.chat-send-btn svg {
+    fill: var(--text-white);
+}
+
+.chat-send-btn:hover svg {
+    fill: var(--accent-green);
+}
+
+.filter-popup {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%) translateY(var(--filter-popup-initial-offset-y));
+    width: clamp(var(--filter-popup-width-min), var(--filter-popup-width-preferred), var(--filter-popup-width-max));
+    background-color: var(--filter-popup-background-color);
+    border: var(--filter-popup-border);
+    border-radius: var(--filter-popup-border-radius);
+    box-shadow: var(--filter-popup-box-shadow);
+    z-index: 1100;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease, visibility var(--transition-speed) ease, bottom var(--transition-speed) ease;
+    padding: var(--filter-popup-padding);
+}
+
+.filter-popup[hidden] {
+    display: none;
+}
+
+.filter-popup.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+.filter-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var(--filter-popup-header-padding-bottom);
+    margin-bottom: var(--filter-popup-header-margin-bottom);
+    border-bottom: var(--filter-popup-header-border-bottom);
+}
+
+.filter-popup-title {
+    font-size: var(--filter-popup-title-font-size);
+    font-weight: var(--filter-popup-title-font-weight);
+    color: var(--filter-popup-title-color);
+}
+
+.filter-popup-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--filter-popup-content-gap);
+}
+
+.filter-option-btn {
+    padding: var(--filter-option-btn-padding);
+    background-color: var(--filter-option-btn-bg-color);
+    color: var(--filter-option-btn-text-color);
+    border: var(--filter-option-btn-border);
+    border-radius: var(--filter-option-btn-border-radius);
+    font-size: var(--filter-option-btn-font-size);
+    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+}
+
+.filter-option-btn:hover {
+    background-color: var(--filter-option-btn-hover-bg-color);
+    border-color: var(--filter-option-btn-hover-border-color);
+}
+
+.filter-option-btn.selected {
+    background-color: var(--filter-option-btn-selected-bg-color);
+    color: var(--filter-option-btn-selected-text-color);
+    border-color: var(--filter-option-btn-selected-border-color);
+    font-weight: var(--filter-option-btn-selected-font-weight);
+}
+
+@font-face {
+    font-family: "Publica";
+    src: url("../fonts/Publica.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Pretendard";
+    src: url("../fonts/PretendardVariable.ttf") format("truetype");
+    font-display: swap;
+}
+
+/* ... (all your existing CSS rules from :root down to the @font-face rules) ... */
+
+/* NEW: Desktop Only Message Styles */
+.desktop-only-message {
+    display: none; /* Hidden by default (on mobile) */
+    position: fixed;
+    inset: 0; /* Covers the entire viewport: top, right, bottom, left = 0 */
+    background-color: var(--primary-blue);
+    color: var(--text-white);
+    font-size: 1.5rem;
+    font-weight: 200;
+    text-align: center;
+    flex-direction: column; /* For centering the <p> tag if you add more content */
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    z-index: 9999; /* Ensures it's on top of everything */
+}
+
+.desktop-only-message p {
+    max-width: 600px;
+}
+
+/* Media Query for Desktop View */
+@media (min-width: 769px) { /* Adjust breakpoint as needed, 769px is a common tablet portrait + */
+    
+    /* Hide all mobile-specific sections */
+    .top-nav,
+    .sidebar,
+    .main-content,
+    .trends-section,
+    .chat-input-bar-section,
+    .filter-popup, /* Ensure popups are also hidden */
+    .page-overlay { /* And general overlays */
+        display: none !important; /* Use !important to ensure override if necessary */
+    }
+
+    /* Show the desktop-only message */
+    .desktop-only-message {
+        display: flex; /* Changed from none to flex to show it */
+    }
+
+    /* Optionally, reset body styles if the flex layout for mobile interferes */
+    /* For instance, if you don't want the body trying to be a column for just one message */
+    body {
+      display: block; /* Or whatever is appropriate for just showing the message container */
+      /* overflow: hidden; already set globally, should be fine */
+    }
+}
