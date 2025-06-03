@@ -3,13 +3,13 @@
    ======================================= */
 @font-face {
   font-family: "Publica";
-  src: url("../fonts/Publica.otf") format("opentype");
+  src: url("/fonts/Publica.otf") format("opentype");
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Pretendard";
-  src: url("../fonts/PretendardVariable.ttf") format("truetype");
+  src: url("/fonts/PretendardVariable.ttf") format("truetype");
   font-style: normal;
   font-display: swap;
 }
